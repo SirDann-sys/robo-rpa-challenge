@@ -1,5 +1,6 @@
 botcity-framework-web==1.1.1
 botcity-maestro-sdk==0.9.1
 openpyxl==3.1.5
+setuptools==84.2.1       # undetected-chromedriver (dependência do framework web) ainda importa distutils
 requests==2.34.2
 pytest==9.2.0
