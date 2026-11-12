@@ -1,5 +1,9 @@
 # Robô RPA Challenge · BotCity
 
+[![Robô](https://github.com/SirDann-sys/robo-rpa-challenge/actions/workflows/robo.yml/badge.svg)](https://github.com/SirDann-sys/robo-rpa-challenge/actions/workflows/robo.yml)
+
+**▶ [Ver a última execução real](https://sirdann-sys.github.io/robo-rpa-challenge/)**: o replay, quadro a quadro, do robô rodando no GitHub Actions.
+
 Robô em Python que resolve o [RPA Challenge](https://rpachallenge.com/), feito com o
 [BotCity Framework Web](https://documentation.botcity.dev/frameworks/web/) e pronto para rodar pelo
 [BotCity Maestro](https://documentation.botcity.dev/maestro/).
@@ -39,6 +43,20 @@ O driver do navegador é resolvido sozinho pelo Selenium Manager. Opções por v
 | `ROBO_NAVEGADOR` | `chrome` | `edge` também funciona |
 | `ROBO_SAIDA` | `saida/` | planilha baixada e prints |
 | `ROBO_ESPERA_MS` | `10000` | tempo máximo para achar cada elemento |
+| `ROBO_GRAVAR` | `0` | `1` grava os prints e o `execucao.json` do replay |
+
+## A demo na web é uma execução real
+
+O workflow [`robo.yml`](.github/workflows/robo.yml) roda a cada push, todo dia às 8h (Brasília) e sob demanda:
+
+1. instala o Python e as dependências num Ubuntu do GitHub (o Chrome já vem instalado);
+2. roda os testes;
+3. executa o robô sem janela com `ROBO_GRAVAR=1`, que salva um print antes de cada Submit, a ordem em que os campos
+   apareceram na tela, o log e o resultado (`gravacao.py`);
+4. monta a página do replay (`ferramentas/gerar_site.py` + `site/`) e publica no GitHub Pages.
+
+Se o robô falhar, nada é publicado: a página continua com a última execução boa, o selo acima fica vermelho e os
+prints do erro ficam anexados ao run.
 
 ## Pelo BotCity Maestro
 
@@ -59,14 +77,18 @@ Rodando local, as mesmas etapas só aparecem no console.
 ```
 
 Os testes não abrem navegador: conferem a leitura da planilha (cabeçalho com espaço, telefone numérico, linha vazia,
-coluna faltando) e a leitura da mensagem de resultado.
+coluna faltando), a leitura da mensagem de resultado e o gravador do replay.
 
 ## Estrutura
 
 ```
-bot.py        robô (WebBot): navegação, preenchimento, Maestro
-desafio.py    regras sem navegador: planilha e mensagem de resultado
-config.py     opções por variável de ambiente
-testes/       pytest
-build.bat     pacote para o Maestro
+bot.py                  robô (WebBot): navegação, preenchimento, Maestro
+desafio.py              regras sem navegador: planilha, ordem dos campos, mensagem de resultado
+gravacao.py             gravação da execução para o replay
+config.py               opções por variável de ambiente
+site/                   página do replay (HTML, CSS e JS sem dependências)
+ferramentas/gerar_site.py  junta a página com a execução gravada
+.github/workflows/      execução no GitHub Actions + publicação no Pages
+testes/                 pytest
+build.bat               pacote para o Maestro
 ```

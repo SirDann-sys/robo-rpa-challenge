@@ -1,0 +1,68 @@
+# Roda o robô de verdade (Python + BotCity + Chrome sem janela) e publica o replay da execução no GitHub Pages.
+name: Robô
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 11 * * *"          # todo dia, 8h de Brasília
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  executar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Testes
+        run: python -m pytest -q testes
+
+      - name: Executar o robô (gravando o replay)
+        env:
+          ROBO_HEADLESS: "1"
+          ROBO_GRAVAR: "1"
+        run: python bot.py
+
+      - name: Montar o site
+        run: python ferramentas/gerar_site.py
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site_publicado
+
+      - name: Guardar os prints se o robô falhar
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: saida-com-erro
+          path: saida/
+          if-no-files-found: ignore
+
+  publicar:
+    needs: executar
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

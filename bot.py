@@ -15,7 +15,8 @@ from botcity.web import Browser, By, WebBot
 from selenium.webdriver.common.selenium_manager import SeleniumManager
 
 import config
-from desafio import CAMPOS, ler_planilha, ler_resultado
+from desafio import CAMPOS, ler_planilha, ler_resultado, ordem_na_tela
+from gravacao import Gravador
 
 log = logging.getLogger("robo")
 
@@ -36,14 +37,23 @@ class Bot(WebBot):
         log.info("tarefa %s", tarefa or "local (sem Maestro)")
 
         self.configurar()
+        self.gravador = Gravador(config.PASTA_SAIDA / "replay", ativo=config.GRAVAR)
+        resultado = None
         try:
             self.browse(config.URL)
+            self.driver.set_window_size(*config.JANELA)
             registros = self.baixar_planilha()
+            self.gravar("Página do desafio aberta; planilha baixada pelo link da própria página",
+                        passo="inicio", registros=len(registros))
             self.clicar(By.XPATH, "//button[contains(translate(normalize-space(.), 'start', 'START'), 'START')]")
 
             for i, registro in enumerate(registros, 1):
                 for campo in CAMPOS:
                     self.preencher(campo, registro[campo])
+                if self.gravador.ativo:
+                    ordem = self.ordem_dos_campos()
+                    self.gravar(f"Rodada {i}/{len(registros)} preenchida, antes do Submit", passo="rodada", rodada=i,
+                                pessoa=f"{registro['First Name']} {registro['Last Name']}", ordem=ordem)
                 self.clicar(By.CSS_SELECTOR, "input[type='submit'][value='Submit']")
                 log.info("rodada %d/%d enviada", i, len(registros))
 
@@ -53,6 +63,8 @@ class Bot(WebBot):
             self.save_screenshot(str(print_))
             log.info("acerto %d%% (%d de %d campos) em %d ms",
                      resultado.acerto, resultado.campos_certos, resultado.campos_total, resultado.tempo_ms)
+            self.gravar(" · ".join(mensagem.splitlines()), passo="resultado")
+            self.gravador.salvar(resultado)
 
             if maestro:
                 maestro.post_artifact(tarefa, "resultado.png", str(print_))
@@ -68,6 +80,7 @@ class Bot(WebBot):
 
         except Exception as erro:
             self.save_screenshot(str(config.PASTA_SAIDA / "erro.png"))
+            self.gravador.salvar(resultado, erro=str(erro))
             if maestro:
                 maestro.error(tarefa, erro, screenshot=str(config.PASTA_SAIDA / "erro.png"))
                 maestro.finish_task(tarefa, AutomationTaskFinishStatus.FAILED, message=str(erro))
@@ -98,6 +111,18 @@ class Bot(WebBot):
             raise RuntimeError(f"campo '{rotulo}' não encontrado")
         campo.clear()
         campo.send_keys(valor)
+
+    def ordem_dos_campos(self):
+        """Ordem em que os rótulos estão na tela agora (só para o replay mostrar o embaralhamento)."""
+        posicoes = {}
+        for rotulo in CAMPOS:
+            campo = self.find_element(f"//label[normalize-space()='{rotulo}']/following-sibling::input[1]", By.XPATH)
+            posicoes[rotulo] = (campo.location["x"], campo.location["y"])
+        return ordem_na_tela(posicoes)
+
+    def gravar(self, legenda, **extra):
+        if self.gravador.ativo:
+            self.gravador.quadro(self.driver.get_screenshot_as_png(), legenda, **extra)
 
     def clicar(self, por, seletor):
         elemento = self.find_element(seletor, por, waiting_time=config.ESPERA_MS)

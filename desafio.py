@@ -38,6 +38,14 @@ def _texto(valor) -> str:
     return str(valor).strip()
 
 
+def ordem_na_tela(posicoes: dict[str, tuple[int, int]]) -> list[str]:
+    """Ordena os rótulos como aparecem na tela (de cima para baixo, da esquerda para a direita).
+
+    Serve só para mostrar no replay que a ordem muda a cada rodada; o preenchimento não depende dela.
+    """
+    return sorted(posicoes, key=lambda rotulo: (posicoes[rotulo][1], posicoes[rotulo][0]))
+
+
 @dataclass
 class Resultado:
     acerto: int          # porcentagem

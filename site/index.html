@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robô RPA Challenge · execução real</title>
+  <meta name="description" content="Replay da última execução real do robô Python com BotCity Framework Web, rodado pelo GitHub Actions.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="replay.css">
+  <script src="replay.js" defer></script>
+</head>
+<body>
+  <main class="pagina">
+    <header class="topo">
+      <p class="sobre">Python · BotCity Framework Web · Selenium</p>
+      <h1>Robô RPA Challenge</h1>
+      <p class="lead">Um robô preenche o mesmo formulário dez vezes, e a cada rodada os campos trocam de lugar.
+        Esta página não é simulação: é o replay da <strong>última execução real</strong>, feita pelo GitHub Actions
+        num Chrome sem janela, com os prints que o próprio robô tirou.</p>
+    </header>
+
+    <section class="status" id="status" aria-live="polite">
+      <span class="selo carregando">carregando a última execução…</span>
+    </section>
+
+    <section class="player" aria-label="Replay da execução">
+      <figure class="tela">
+        <img id="quadro" alt="" width="1280" height="638">
+        <figcaption>
+          <span class="contador" id="contador"></span>
+          <span id="legenda"></span>
+        </figcaption>
+      </figure>
+      <div class="ordem" id="ordem" hidden>
+        <p>Ordem dos campos na tela nesta rodada</p>
+        <ol id="ordem-lista"></ol>
+      </div>
+      <div class="controles">
+        <button type="button" id="primeiro" aria-label="Primeiro quadro">⏮</button>
+        <button type="button" id="anterior" aria-label="Quadro anterior">◀</button>
+        <button type="button" id="tocar" class="principal" aria-label="Tocar">▶ Tocar</button>
+        <button type="button" id="proximo" aria-label="Próximo quadro">▶</button>
+        <button type="button" id="ultimo" aria-label="Último quadro">⏭</button>
+      </div>
+      <div class="trilha" id="trilha" role="tablist" aria-label="Quadros"></div>
+      <p class="dica">Setas ← → trocam o quadro; espaço toca e pausa.</p>
+    </section>
+
+    <section class="log" aria-label="Log da execução">
+      <h2>Log do robô</h2>
+      <ol id="log"></ol>
+    </section>
+
+    <section class="como">
+      <h2>Como funciona</h2>
+      <ul>
+        <li><strong>Acha cada campo pelo rótulo</strong>, nunca pela posição:
+          <code>//label[normalize-space()='Email']/following-sibling::input</code>.</li>
+        <li><strong>Corrige a planilha</strong>: o cabeçalho <code>"Last Name "</code> tem espaço sobrando e o telefone vem
+          como número (<code>40716543298.0</code>).</li>
+        <li><strong>Roda sozinho no GitHub Actions</strong> a cada mudança no código e todo dia: instala o Python,
+          roda os testes, executa o robô e publica esta página. Se o robô falhar, a página não é trocada.</li>
+        <li><strong>Pronto para o BotCity Maestro</strong>: lá ele envia o print como artefato e fecha a tarefa com o resultado.</li>
+      </ul>
+      <p class="aviso">Os prints de cada rodada deixam a execução gravada alguns segundos mais lenta do que a normal.</p>
+      <p class="links">
+        <a href="https://github.com/SirDann-sys/robo-rpa-challenge">Código no GitHub</a>
+        <a href="https://github.com/SirDann-sys/robo-rpa-challenge/actions">Execuções no GitHub Actions</a>
+        <a href="https://rpachallenge.com/">O desafio</a>
+      </p>
+    </section>
+  </main>
+</body>
+</html>

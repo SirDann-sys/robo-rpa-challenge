@@ -1,0 +1,98 @@
+:root {
+  --fundo: #f6f7f9;
+  --cartao: #ffffff;
+  --texto: #16181d;
+  --suave: #5b6270;
+  --borda: #dfe2e8;
+  --destaque: #0b6bcb;
+  --destaque-texto: #ffffff;
+  --ok: #157f3b;
+  --ok-fundo: #e4f5ea;
+  --erro: #b42318;
+  --erro-fundo: #fdecea;
+  --codigo: #eef0f4;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #0f1115;
+    --cartao: #171a21;
+    --texto: #e8eaef;
+    --suave: #9aa1ae;
+    --borda: #2a2f3a;
+    --destaque: #4ea1f3;
+    --destaque-texto: #0b0d11;
+    --ok: #5fd08a;
+    --ok-fundo: #12291b;
+    --erro: #ff8a7a;
+    --erro-fundo: #2e1512;
+    --codigo: #222631;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.pagina { max-width: 1040px; margin: 0 auto; padding: 32px 16px 56px; }
+
+.topo h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; margin: 4px 0 12px; }
+.sobre { margin: 0; color: var(--destaque); font-weight: 600; font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; }
+.lead { margin: 0; max-width: 70ch; color: var(--suave); }
+.lead strong { color: var(--texto); }
+
+.status { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 24px 0 16px; color: var(--suave); font-size: .92rem; }
+.status a { color: var(--destaque); }
+.selo { display: inline-flex; gap: 6px; align-items: center; padding: 4px 12px; border-radius: 999px; font-weight: 700; color: var(--texto); background: var(--codigo); }
+.selo.ok { color: var(--ok); background: var(--ok-fundo); }
+.selo.erro { color: var(--erro); background: var(--erro-fundo); }
+
+.player, .log, .como { background: var(--cartao); border: 1px solid var(--borda); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+.tela { margin: 0; }
+.tela img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--borda); background: var(--codigo); }
+.tela figcaption { display: flex; gap: 10px; align-items: baseline; margin-top: 10px; font-weight: 600; }
+.contador { color: var(--suave); font-variant-numeric: tabular-nums; font-weight: 500; white-space: nowrap; }
+
+.ordem { margin-top: 10px; }
+.ordem p { margin: 0 0 6px; font-size: .85rem; color: var(--suave); }
+.ordem ol { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; counter-reset: campo; }
+.ordem li { counter-increment: campo; padding: 3px 10px; border-radius: 6px; background: var(--codigo); font-size: .85rem; }
+.ordem li::before { content: counter(campo) ". "; color: var(--suave); }
+
+.controles { display: flex; justify-content: center; gap: 8px; margin: 16px 0 10px; }
+button {
+  font: inherit; cursor: pointer; min-width: 44px; min-height: 40px; padding: 6px 12px;
+  border-radius: 8px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto);
+}
+button:hover { border-color: var(--destaque); }
+button:focus-visible { outline: 2px solid var(--destaque); outline-offset: 2px; }
+button.principal { background: var(--destaque); color: var(--destaque-texto); border-color: var(--destaque); font-weight: 700; min-width: 112px; }
+
+.trilha { display: grid; grid-template-columns: repeat(auto-fit, minmax(18px, 1fr)); gap: 4px; }
+.trilha button { min-width: 0; min-height: 10px; height: 10px; padding: 0; border-radius: 4px; background: var(--borda); border: 0; }
+.trilha button[aria-selected="true"] { background: var(--destaque); }
+.dica { margin: 10px 0 0; text-align: center; color: var(--suave); font-size: .8rem; }
+
+h2 { font-size: 1.1rem; margin: 0 0 10px; }
+.log ol { margin: 0; padding: 0; list-style: none; font: .85rem/1.6 ui-monospace, "Cascadia Code", Consolas, monospace; max-height: 260px; overflow: auto; }
+.log li { display: flex; gap: 12px; padding: 1px 6px; border-radius: 4px; color: var(--suave); }
+.log li.feito { color: var(--texto); }
+.log li.atual { background: var(--codigo); }
+.log time { min-width: 4.5ch; text-align: right; color: var(--suave); }
+
+.como ul { margin: 0; padding-left: 20px; }
+.como li { margin-bottom: 6px; }
+code { font: .85em ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--codigo); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.aviso { color: var(--suave); font-size: .85rem; }
+.links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 0; }
+.links a { color: var(--destaque); font-weight: 600; }
+
+@media (max-width: 600px) {
+  .tela figcaption { flex-direction: column; gap: 2px; }
+  .controles { gap: 4px; }
+  .controles button { padding: 6px 8px; }
+}
