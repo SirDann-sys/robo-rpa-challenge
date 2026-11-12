@@ -1,0 +1,5 @@
+botcity-framework-web==1.1.1
+botcity-maestro-sdk==0.9.1
+openpyxl==3.1.5
+requests==2.34.2
+pytest==9.2.0
